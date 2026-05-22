@@ -19,4 +19,28 @@ router.post('/signup', async (req, res) => {
 
     res.json({ token, user })
 })
+
+router.post('/login', async (req, res) => {
+    const {email,password} = req.body
+    const result = await pool.query('SELECT * FROM users WHERE email = $1',[req.body.email])
+    const user = result.rows[0]
+    const isMatch = await bcrypt.compare(password, user.password_hash)
+    if(isMatch) {
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || 'secretkey',
+      { expiresIn: '7d' }
+    )
+    res.json({ token, user })
+  } else {
+    res.json({ error: 'Invalid password' })
+  }
+  // step 1: get email and password from req.body
+  // step 2: find user in database by email
+  // step 3: compare passwords
+  // step 4: if match, send token
+  // step 5: if no match, send error
+})
+
 export default router
+
