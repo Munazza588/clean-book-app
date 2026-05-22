@@ -1,3 +1,4 @@
+import pool from './db'
 //runs the server
 //Listen for requests from our frontend
 //Process them (get books, create users, save favorites)
@@ -53,3 +54,7 @@ app.get('/',(req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+pool.connect()
+  .then(() => console.log('Connected to PostgreSQL! 🎉'))
+  .catch((err) => console.log('Database connection error:', err))
