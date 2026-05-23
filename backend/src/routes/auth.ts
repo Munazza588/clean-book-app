@@ -24,6 +24,7 @@ router.post('/login', async (req, res) => {
     const {email,password} = req.body
     const result = await pool.query('SELECT * FROM users WHERE email = $1',[req.body.email])
     const user = result.rows[0]
+    if(!user) return res.json({ error: 'User not found' })
     const isMatch = await bcrypt.compare(password, user.password_hash)
     if(isMatch) {
     const token = jwt.sign(
@@ -35,11 +36,7 @@ router.post('/login', async (req, res) => {
   } else {
     res.json({ error: 'Invalid password' })
   }
-  // step 1: get email and password from req.body
-  // step 2: find user in database by email
-  // step 3: compare passwords
-  // step 4: if match, send token
-  // step 5: if no match, send error
+  
 })
 
 export default router

@@ -1,4 +1,5 @@
 import pool from './db'
+import authMiddleware from './middleware/auth'
 
 //runs the server
 //Listen for requests from our frontend
@@ -62,7 +63,7 @@ pool.connect()
 
 //async means this function will 
 // wait for something before continuing
-app.get('/books',async(req,res) => {
+app.get('/books',authMiddleware,async(req,res) => {
   const result = await pool.query('SELECT * FROM books')
   res.json(result.rows)
 })
