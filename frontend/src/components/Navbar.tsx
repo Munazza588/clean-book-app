@@ -1,4 +1,12 @@
+import { useState, useEffect } from 'react'
 const Navbar = () => {
+    const [isLoggedIn,setIsLoggedIn] = useState(false)
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if(token) {
+            setIsLoggedIn(true)
+        }
+    },[])
   return (
     <nav className="bg-amber-50 border-b border-stone-200 px-8 py-4 flex items-center justify-between">
       
@@ -16,9 +24,22 @@ const Navbar = () => {
 
       {/* Sign in button */}
       <div>
-        <button className="bg-pink-300 text-white text-sm px-4 py-2 rounded-full">
+        {isLoggedIn ? (
+        <button 
+            onClick={() => {
+            localStorage.removeItem('token')
+            window.location.href = '/login'
+            }}
+            className="bg-pink-300 text-white text-sm px-4 py-2 rounded-full">
+            Sign out
+        </button>
+        ) : (
+        <button 
+            onClick={() => window.location.href = '/login'}
+            className="bg-pink-300 text-white text-sm px-4 py-2 rounded-full">
             Sign in
         </button>
+        )}
       </div>
 
     </nav>
