@@ -4,12 +4,20 @@ const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const handleLogin = async () => {
-        const response = await axios.post('http://localhost:3001/auth/login', {
-        email,
-        password
-        })
-        localStorage.setItem('token',response.data.token)
-        window.location.href = '/'
+        if(!email || !password) {
+            alert('Please fill in all fields!')
+            return
+        }
+        try {
+            const response = await axios.post('http://localhost:3001/auth/login', {
+            email,
+            password
+            })
+            localStorage.setItem('token',response.data.token)
+            window.location.href = '/'
+        } catch(error) {
+            alert('Invalid email or password!')
+        }
     } 
   return (
     <div className="bg-amber-50 min-h-screen flex items-center justify-center">
