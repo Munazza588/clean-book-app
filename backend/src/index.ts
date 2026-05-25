@@ -1,5 +1,6 @@
 import pool from './db'
 import authMiddleware from './middleware/auth'
+import authRouter from './routes/auth'
 
 //runs the server
 //Listen for requests from our frontend
@@ -53,17 +54,13 @@ app.use(express.json())
 app.get('/',(req, res) => {
     res.json({ message: 'someone visited'})
 })
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
-
 pool.connect()
   .then(() => console.log('Connected to PostgreSQL! 🎉'))
   .catch((err) => console.log('Database connection error:', err))
 
 //async means this function will 
 // wait for something before continuing
-app.get('/books',authMiddleware,async(req,res) => {
+app.get('/books',async(req,res) => {
   const result = await pool.query('SELECT * FROM books')
   res.json(result.rows)
 })
@@ -73,5 +70,9 @@ app.get('/books/:id',async(req,res) => {
   res.json(result.rows[0])
 })
 
-import authRouter from './routes/auth'
+
 app.use('/auth', authRouter)
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
