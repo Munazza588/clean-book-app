@@ -82,6 +82,22 @@ const Home = () => {
     </div>
     
     </div>
+    <div className="px-12 py-10 bg-white">
+    <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-medium text-stone-800">What friends are reading</h2>
+        <a href="/friends" className="text-sm text-rose-400 hover:underline">See all →</a>
+    </div>
+
+    <div className="grid grid-cols-3 gap-4">
+        <div className="flex items-center gap-3 bg-amber-50 rounded-xl p-4 border border-stone-200">
+        <div className="w-10 h-10 rounded-full bg-rose-200 flex items-center justify-center text-sm font-medium text-rose-700">SA</div>
+        <div>
+            <p className="text-sm font-medium text-stone-800">Sara A.</p>
+            <p className="text-xs text-stone-500">loved "Love in Paris"</p>
+        </div>
+        </div>
+    </div>
+    </div>
     </div>
 
   )
