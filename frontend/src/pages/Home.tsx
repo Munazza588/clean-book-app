@@ -65,7 +65,9 @@ const Home = () => {
     </div>
     <div className="grid grid-cols-4 gap-6">
     {books.map((book: any) => (
-    <div key={book.id} className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
+    <div key={book.id} 
+       onClick={() => window.location.href = `/books/${book.id}`}
+       className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
         <div className="h-40 bg-amber-100 flex items-center justify-center">
         <span className="text-4xl">📚</span>
         </div>
