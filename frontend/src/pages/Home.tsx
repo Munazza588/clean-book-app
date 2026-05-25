@@ -63,6 +63,7 @@ const Home = () => {
         <h2 className="text-xl font-medium text-stone-800">Featured clean reads</h2>
         <a href="/books" className="text-sm text-rose-400 hover:underline">View all →</a>
     </div>
+    <div className="grid grid-cols-4 gap-6">
     {books.map((book: any) => (
     <div key={book.id} className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
         <div className="h-40 bg-amber-100 flex items-center justify-center">
@@ -78,6 +79,7 @@ const Home = () => {
         </div>
     </div>
 ))}
+    </div>
     
     </div>
     </div>
