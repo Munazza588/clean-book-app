@@ -5,6 +5,8 @@ import axios from 'axios'
 
 const Home = () => {
    const [books, setBooks] = useState([]) 
+   const [search,setSearch] = useState('')
+
    useEffect(() => {
     axios.get('http://localhost:3001/books')
         .then((response) => {
@@ -12,10 +14,30 @@ const Home = () => {
     })
    },[])
 
+   const handleSearch = async () => {
+        if(!search) return
+  
+        const response = await axios.get(`http://localhost:3001/books?search=${search}`)
+        const results = response.data
+        
+        if(results.length === 1) {
+            // exactly one book found → go directly to it
+            window.location.href = `/books/${results[0].id}`
+        } else if(results.length > 1) {
+            // multiple books found → show them filtered
+            setBooks(results)
+        } else {
+            // no books found
+            alert('No books found!')
+        }
+
+   }
+
   return (
     <div className="bg-amber-50 min-h-screen">
         <Navbar />
         <div className="grid grid-cols-2 min-h-64">
+            
             <div className="flex flex-col justify-center px-12 py-16">
                 <h1 className="text-4xl font-medium text-stone-800 leading-snug mb-4">
                     Romance reads, <br/>
@@ -29,10 +51,26 @@ const Home = () => {
                     text-white text-sm px-6 py-2 rounded-full">Explore books</button>
                     <button className="border border-pink-300 text-pink-300 text-sm px-6 py-2 rounded-full">Join community</button>
                 </div>
+                <div className="flex gap-2 mt-12">
+                <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search by title..."
+                    className="border border-stone-200 rounded-full px-4 py-2 text-sm bg-white w-96"
+                />
+                <button 
+                    onClick={handleSearch}
+                    className="bg-pink-300 text-white text-sm px-6 py-2 rounded-full z-10 relative">
+                    Search
+                </button>
+               
             </div>
-            <div className=" flex items-center justify-center p-12">
+            </div>
+            
+            <div className=" flex items-center justify-center p-12 pointer-events-none">
                 <img src={hero} alt="cozy reading" className="w-full h-full object-cover" />
             </div>
+            
         </div>
         <div className="grid grid-cols-4 border-t border-b border-stone-200 bg-white">
   
@@ -55,7 +93,7 @@ const Home = () => {
             <p className="text-sm font-medium text-stone-800 mb-1">Track and grow</p>
             <p className="text-xs text-stone-500">Save favorites, track reads, grow together.</p>
         </div>
-
+            
         </div>
     <div className="px-12 py-10">
     

@@ -61,8 +61,17 @@ pool.connect()
 //async means this function will 
 // wait for something before continuing
 app.get('/books',async(req,res) => {
-  const result = await pool.query('SELECT * FROM books')
-  res.json(result.rows)
+  const search = req.query.search
+  if(search) {
+    const result = await pool.query(
+      'SELECT * FROM books WHERE title ILIKE $1',
+      [`%${search}%`]
+    )
+    res.json(result.rows)
+  } else {
+    const result = await pool.query('SELECT * FROM books')
+    res.json(result.rows)
+  }
 })
 
 app.get('/books/:id',async(req,res) => {
