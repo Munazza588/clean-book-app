@@ -16,6 +16,28 @@ const BookDetail = () => {
 
     if(!book) return <p>Loading...</p>
 
+    const handleFavorite = async () => {
+    const token = localStorage.getItem('token')
+    if(!token) {
+        window.location.href = '/login'
+        return
+    }
+    
+    try {
+        await axios.post('http://localhost:3001/favorites', 
+        { book_id: id },
+        { headers: { Authorization: `Bearer ${token}` } }
+        )
+        alert('Added to favorites! 🎉')
+    } catch(error : any) {
+        if(error.response?.status === 500) {
+            alert('You already saved this book! ♡')
+        } else {
+            alert('Something went wrong!')
+        }
+    }
+    }
+
     return (
         <div className="bg-amber-50 min-h-screen p-12">
         <Navbar />
@@ -37,7 +59,14 @@ const BookDetail = () => {
 
                     {/* Verified badge */}
                     <span className="text-xs text-green-700 bg-green-50 px-3 py-1 rounded-full">✓ Verified Clean</span>
-
+                    
+                </div>
+                <div className="flex justify-center mt-4">
+                    <button 
+                            onClick={handleFavorite}
+                            className="mt-4 bg-pink-300 text-white px-6 py-2 rounded-full text-sm hover:bg-rose-500 transition-colors">
+                            ♡ Add to favorites
+                    </button>
                 </div>
             </div>
         </div>

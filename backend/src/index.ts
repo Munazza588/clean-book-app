@@ -73,6 +73,16 @@ app.get('/books/:id',async(req,res) => {
 
 app.use('/auth', authRouter)
 
+app.post('/favorites',authMiddleware,async (req,res) => {
+  const {book_id} = req.body
+  const user_id = (req as any).user.id
+  const result = await pool.query(
+    'INSERT INTO favorites (user_id, book_id) VALUES ($1, $2) RETURNING *',
+    [user_id, book_id]
+  )
+  res.json(result.rows[0])
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
