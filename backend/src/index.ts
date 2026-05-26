@@ -83,6 +83,25 @@ app.post('/favorites',authMiddleware,async (req,res) => {
   res.json(result.rows[0])
 })
 
+app.post('/reviews',authMiddleware,async (req,res) => {
+  const {book_id, rating, content} = req.body
+  const user_id = (req as any).user.id
+
+  const result = await pool.query(
+    'INSERT INTO reviews (user_id, book_id, rating, content) VALUES ($1, $2, $3, $4) RETURNING *',
+    [user_id, book_id, rating, content]
+  )
+  res.json(result.rows[0])
+})
+
+app.get('/reviews/:book_id',async (req,res) => {
+  const result = await pool.query(
+    'SELECT reviews.*, users.name FROM reviews JOIN users ON reviews.user_id = users.id WHERE reviews.book_id = $1',
+    [req.params.book_id]
+  )
+  res.json(result.rows)
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

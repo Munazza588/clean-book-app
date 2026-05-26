@@ -6,11 +6,18 @@ import Navbar from '../components/Navbar'
 const BookDetail = () => {
     const {id} = useParams()
     const [book,setBook] = useState(null)
+    const [reviews, setReviews] = useState([])
+    const [rating, setRating] = useState(5)
+    const [content, setContent] = useState('')
 
     useEffect(() => {
         axios.get(`http://localhost:3001/books/${id}`)
         .then((response) => {
             setBook(response.data)
+        })
+        axios.get(`http://localhost:3001/reviews/${id}`)
+        .then((response) => {
+        setReviews(response.data)
         })
     },[id])
 
@@ -36,6 +43,34 @@ const BookDetail = () => {
             alert('Something went wrong!')
         }
     }
+    }
+
+    const handleReview = async () => {
+        const token = localStorage.getItem('token')
+        if(!token) {
+        window.location.href = '/login'
+        return
+       }
+       if(!content) {
+        alert('Please write a review!')
+        return
+       }
+       try {
+        await axios.post('http://localhost:3001/reviews',
+        { book_id: id, rating, content },
+        { headers: { Authorization: `Bearer ${token}` } }
+        )
+        alert('Review submitted! 🎉')
+        setContent('')
+        setRating(5)
+        // refresh reviews
+        const response = await axios.get(`http://localhost:3001/reviews/${id}`)
+        setReviews(response.data)
+        }catch(error: any) {
+        alert('Something went wrong!')
+        }
+
+
     }
 
     return (
@@ -68,6 +103,53 @@ const BookDetail = () => {
                             ♡ Add to favorites
                     </button>
                 </div>
+            </div>
+            <div style={{fontFamily: 'Playfair Display, serif'}} className="bg-white rounded-xl border border-stone-200 p-6 mt-6">
+            <h2 className="text-lg font-medium text-stone-800 mb-4">Write a review</h2>
+            
+            <div className="mb-4">
+                <label className="text-sm text-stone-600 mb-1 block">Rating (1-5)</label>
+                <input 
+                type="number" 
+                min="1" 
+                max="5"
+                value={rating}
+                onChange={(e) => setRating(Number(e.target.value))}
+                className="w-20 border border-stone-200 rounded-lg p-2 text-sm"
+                />
+            </div>
+
+            <div style={{fontFamily: 'Playfair Display, serif'}} className="mb-4">
+                <label className="text-sm text-stone-600 mb-1 block">Your review</label>
+                <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="What did you think of this book?"
+                className="w-full border border-stone-200 rounded-lg p-2 text-sm h-24"
+                />
+            </div>
+
+            <button onClick={handleReview} className="bg-pink-300 text-white px-6 py-2 rounded-full text-sm">
+                Submit review
+            </button>
+            </div>
+            {/* Display reviews */}
+            <div className="mt-6">
+            <h2 className="text-lg font-medium text-stone-800 mb-4">Reviews</h2>
+            
+            {reviews.length === 0 ? (
+                <p className="text-sm text-stone-500">No reviews yet — be the first!</p>
+            ) : (
+                reviews.map((review: any) => (
+                <div key={review.id} className="bg-white rounded-xl border border-stone-200 p-4 mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-stone-800">{review.name}</p>
+                    <p className="text-sm text-amber-500">{'★'.repeat(review.rating)}</p>
+                    </div>
+                    <p className="text-sm text-stone-600">{review.content}</p>
+                </div>
+                ))
+            )}
             </div>
         </div>
     )
