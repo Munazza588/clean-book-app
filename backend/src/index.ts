@@ -103,6 +103,16 @@ app.post('/reviews',authMiddleware,async (req,res) => {
   res.json(result.rows[0])
 })
 
+app.post('/submissions',authMiddleware,async(req,res) => {
+  const {title,author_name,description,genre,cover_url,manuscript_url} = req.body
+  const user_id = (req as any).user.id
+  const result = await pool.query(
+    'INSERT INTO submissions (user_id,title,author_name,description,genre,cover_url,manuscript_url) VALUES ($1, $2, $3, $4,$5,$6,$7) RETURNING *',
+    [user_id,title,author_name,description,genre,cover_url,manuscript_url]
+  )
+  res.json(result.rows[0])
+})
+
 app.get('/reviews/:book_id',async (req,res) => {
   const result = await pool.query(
     'SELECT reviews.*, users.name FROM reviews JOIN users ON reviews.user_id = users.id WHERE reviews.book_id = $1',
@@ -110,6 +120,17 @@ app.get('/reviews/:book_id',async (req,res) => {
   )
   res.json(result.rows)
 })
+
+app.get('/favorites', authMiddleware, async (req,res) => {
+  const user_id = (req as any).user.id
+  const result = await pool.query(
+    'SELECT books.* FROM favorites JOIN books ON favorites.book_id = books.id WHERE favorites.user_id = $1',
+    [user_id]
+  )
+  res.json(result.rows)
+})
+
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)

@@ -18,7 +18,7 @@ const Navbar = () => {
         <a href="/" className="text-sm text-stone-600 hover:text-stone-800">Home</a>
         <a href="/Books" className="text-sm text-stone-600 hover:text-stone-800">Books</a>
         <a href="/Reviews" className="text-sm text-stone-600 hover:text-stone-800">Reviews</a>
-        <a href="/Community" className="text-sm text-stone-600 hover:text-stone-800">Community</a>
+        <a href="/favorites" className="text-sm text-stone-600 hover:text-stone-800">Favorites</a>
         <a href="/About" className="text-sm text-stone-600 hover:text-stone-800">About</a>
       </div>
 

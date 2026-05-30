@@ -1,5 +1,6 @@
 import Navbar from '../components/Navbar'
 import hero from '../assets/hero.png'
+import friends from '../assets/friends.png'
 import {useState, useEffect} from 'react'
 import axios from 'axios'
 
@@ -138,7 +139,29 @@ const Home = () => {
         </div>
     </div>
     </div>
+        <div className="px-12 py-16 bg-amber-50">
+            <div className="grid grid-cols-2 items-center gap-12">
+                
+                {/* Image on the left */}
+                <div>
+                <img src={friends} alt="community" className="w-full object-cover" />
+                </div>
+
+                {/* Text on the right */}
+                <div>
+                <h2 className="text-2xl font-medium text-black mb-4">Are you an Author?</h2>
+                <p className="text-stone-500 text-sm mb-6 max-w-lg leading-relaxed">Write clean romance? We'd love to feature your work. Submit your book for review and become part of a community that believes love stories don't need explicit content to be beautiful.</p>
+                <button 
+                    onClick={() => window.location.href = '/submit'}
+                    className="bg-pink-300 text-white text-sm px-6 py-2 rounded-full hover:bg-pink-400 transition-colors">
+                    Submit your book
+                </button>
+                </div>
+
+            </div>
+        </div>
     </div>
+
 
   )
 }
