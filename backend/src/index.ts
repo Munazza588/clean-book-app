@@ -130,6 +130,101 @@ app.get('/favorites', authMiddleware, async (req,res) => {
   res.json(result.rows)
 })
 
+app.get('/users/search', async(req,res) => {
+  const name = req.query.search
+  const result = await pool.query(
+    'SELECT id,name,email FROM users WHERE name ILIKE $1',
+      [`%${name}%`]
+    )
+    res.json(result.rows)
+})
+
+
+app.post('/follow/:userId',authMiddleware, async(req,res) => {
+    const user_id = (req as any).user.id
+    const user_id_to_follow = req.params.userId
+    const result = await pool.query(
+      'INSERT INTO friendships (follower_id, following_id) VALUES ($1, $2) RETURNING *',
+      [user_id, user_id_to_follow]
+    )
+    res.json(result.rows[0])
+})
+
+app.delete('/follow/:userId',authMiddleware, async(req,res) => {
+    const user_id = (req as any).user.id
+    const user_id_to_delete = req.params.userId
+    const result = await pool.query(
+      'DELETE FROM friendships WHERE follower_id = $1 AND following_id = $2',
+      [user_id, user_id_to_delete]
+    )
+    res.json(result.rows[0])
+})
+
+app.get('/feed',authMiddleware,async(req,res) => {
+    const user_id = (req as any).user.id
+    const result = await pool.query(
+      `SELECT books.*, users.name as reader_name
+       FROM favorites
+       JOIN books ON favorites.book_id = books.id
+       JOIN users ON favorites.user_id = users.id
+       JOIN friendships ON friendships.following_id = favorites.user_id
+       WHERE friendships.follower_id = $1`,
+       [user_id]
+
+    )
+
+    res.json(result.rows)
+})
+
+app.get('/users/:userId', async(req, res) => {
+  const { userId } = req.params
+  
+  // check if logged in user follows this person
+  const token = req.headers.authorization?.split(' ')[1]
+  let isFollowing = false
+  
+  if(token) {
+    try {
+      const jwt = require('jsonwebtoken')
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'secretkey')
+      const followCheck = await pool.query(
+        'SELECT * FROM friendships WHERE follower_id = $1 AND following_id = $2',
+        [decoded.id, userId]
+      )
+      isFollowing = followCheck.rows.length > 0
+    } catch(e) {
+      isFollowing = false
+    }
+  }
+
+  const user = await pool.query(
+    'SELECT id, name, role FROM users WHERE id = $1',
+    [userId]
+  )
+
+  const favorites = await pool.query(
+    'SELECT books.* FROM favorites JOIN books ON favorites.book_id = books.id WHERE favorites.user_id = $1',
+    [userId]
+  )
+
+  const followers = await pool.query(
+    'SELECT COUNT(*) FROM friendships WHERE following_id = $1',
+    [userId]
+  )
+
+  const following = await pool.query(
+    'SELECT COUNT(*) FROM friendships WHERE follower_id = $1',
+    [userId]
+  )
+
+  res.json({
+    user: user.rows[0],
+    favorites: favorites.rows,
+    followers: followers.rows[0].count,
+    following: following.rows[0].count,
+    isFollowing
+  })
+})
 
 
 app.listen(PORT, () => {

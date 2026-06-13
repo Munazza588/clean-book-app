@@ -7,32 +7,49 @@ import axios from 'axios'
 const Home = () => {
    const [books, setBooks] = useState([]) 
    const [search,setSearch] = useState('')
+   const [feed, setFeed] = useState([])
+   const [users, setUsers] = useState([])
 
    useEffect(() => {
     axios.get('http://localhost:3001/books')
         .then((response) => {
          setBooks(response.data)
     })
+
+        const token = localStorage.getItem('token')
+    if(token) {
+    axios.get('http://localhost:3001/feed', {
+        headers: { Authorization: `Bearer ${token}` }
+    }).then((response) => {
+        setFeed(response.data)
+    })
+    }
+
    },[])
 
    const handleSearch = async () => {
-        if(!search) return
+  if(!search) return
   
-        const response = await axios.get(`http://localhost:3001/books?search=${search}`)
-        const results = response.data
-        
-        if(results.length === 1) {
-            // exactly one book found → go directly to it
-            window.location.href = `/books/${results[0].id}`
-        } else if(results.length > 1) {
-            // multiple books found → show them filtered
-            setBooks(results)
-        } else {
-            // no books found
-            alert('No books found!')
-        }
+  // search books
+  const bookResponse = await axios.get(`http://localhost:3001/books?search=${search}`)
+  const bookResults = bookResponse.data
+  
+  // search users
+  const userResponse = await axios.get(`http://localhost:3001/users/search?search=${search}`)
+  const userResults = userResponse.data
 
-   }
+  if(bookResults.length === 1 && userResults.length === 0) {
+    window.location.href = `/books/${bookResults[0].id}`
+  } else if(bookResults.length > 1) {
+    setBooks(bookResults)
+  } else if(userResults.length === 1) {
+    window.location.href = `/users/${userResults[0].id}`
+  } else if(userResults.length > 1) {
+    setUsers(userResults)
+  } else {
+    alert('No results found!')
+  }
+}
 
   return (
     <div className="bg-amber-50 min-h-screen">
@@ -119,8 +136,30 @@ const Home = () => {
         </div>
         </div>
     </div>
+    
 ))}
     </div>
+        {users.length > 0 && (
+    <div className="mt-8">
+        <h2 className="text-xl font-medium text-stone-800 mb-4">People</h2>
+        <div className="grid grid-cols-4 gap-4">
+        {users.map((user: any) => (
+            <div 
+            key={user.id}
+            onClick={() => window.location.href = `/users/${user.id}`}
+            className="bg-white rounded-xl border border-stone-200 p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 rounded-full bg-stone-200 text-stone-700 flex items-center justify-center text-sm font-medium">
+                {user.name?.charAt(0).toUpperCase()}
+            </div>
+            <div>
+                <p className="text-sm font-medium text-stone-800">{user.name}</p>
+                <p className="text-xs text-stone-500">{user.role}</p>
+            </div>
+            </div>
+        ))}
+        </div>
+    </div>
+    )}
     
     </div>
     <div className="px-12 py-10 bg-white">
@@ -130,13 +169,21 @@ const Home = () => {
     </div>
 
     <div className="grid grid-cols-3 gap-4">
-        <div className="flex items-center gap-3 bg-amber-50 rounded-xl p-4 border border-stone-200">
-        <div className="w-10 h-10 rounded-full bg-rose-200 flex items-center justify-center text-sm font-medium text-rose-700">SA</div>
-        <div>
-            <p className="text-sm font-medium text-stone-800">Sara A.</p>
-            <p className="text-xs text-stone-500">loved "Love in Paris"</p>
-        </div>
-        </div>
+        {feed.length === 0 ? (
+        <p className="text-stone-500 text-sm">Follow friends to see what they're reading!</p>
+        ) : (
+        feed.map((item: any) => (
+            <div className="flex items-center gap-3 bg-amber-50 rounded-xl p-4 border border-stone-200">
+            <div className="w-10 h-10 rounded-full bg-rose-200 flex items-center justify-center text-sm font-medium text-rose-700">
+                {item.reader_name?.charAt(0).toUpperCase()}
+            </div>
+            <div>
+                <p className="text-sm font-medium text-stone-800">{item.reader_name}</p>
+                <p className="text-xs text-stone-500">saved "{item.title}"</p>
+            </div>
+            </div>
+        ))
+        )}
     </div>
     </div>
         <div className="px-12 py-16 bg-amber-50">

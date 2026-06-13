@@ -5,6 +5,7 @@ import Signup from './pages/Signup'
 import BookDetail from './pages/BookDetail'
 import Favorites from './pages/Favorites'
 import Submit from './pages/Submit'
+import UserProfile from './pages/UserProfile'
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path='/books/:id' element={<BookDetail />} />
         <Route path='/favorites' element={<Favorites />} />
         {<Route path='/submit'    element={<Submit />} />}
+        <Route path='/users/:userId' element={<UserProfile />} />
       </Routes>
     </BrowserRouter>
   )
