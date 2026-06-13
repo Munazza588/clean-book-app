@@ -1,88 +1,73 @@
-# Clean Reads 📚
+# React + TypeScript + Vite
 
-A cozy, warm platform for romance readers who love their reads clean. Discover, share, and fall in love with reading — no surprises, just good books and good vibes.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## What is Clean Reads?
+Currently, two official plugins are available:
 
-Clean Reads is a full stack web application where readers can discover verified clean romance books, connect with friends, and build a mindful reading life together.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-Every book on the platform is verified clean — no explicit content, ever.
+## React Compiler
 
-## Features
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- 📖 **Browse & Search** — discover clean romance books by title or author
-- 🔐 **Authentication** — secure signup and login with JWT
-- ❤️ **Favorites** — save books you love to your personal reading list
-- ⭐ **Reviews** — write and read honest reviews from the community
-- 👥 **Follow Friends** — follow other readers and see what they're reading
-- 📰 **Friends Feed** — see your friends' favorite books in real time
-- ✍️ **Author Submissions** — authors can submit their clean romance books for review
-- 👤 **User Profiles** — view follower/following counts and favorite books
+## Expanding the ESLint configuration
 
-## Tech Stack
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-**Frontend**
-- React + TypeScript
-- Tailwind CSS
-- Axios
-- React Router DOM
-- Vite
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-**Backend**
-- Node.js + Express
-- TypeScript
-- JWT Authentication
-- bcryptjs
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-**Database**
-- PostgreSQL
-- Complex SQL queries and JOINs
-
-## Getting Started
-
-### Prerequisites
-- Node.js
-- PostgreSQL
-- npm
-
-### Installation
-
-1. Clone the repository
-```bash
-git clone https://github.com/Munazza588/clean-book-app.git
-cd clean-book-app
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-2. Set up the backend
-```bash
-cd backend
-npm install
-npm run dev
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-3. Set up the frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-4. Set up the database
-```bash
-psql postgres
-CREATE DATABASE cleanbookapp;
-\c cleanbookapp
-```
-Then run the SQL in `database/schema.sql`
-
-## Roadmap
-
-- [ ] Admin panel for approving book submissions
-- [ ] Docker containerization
-- [ ] CI/CD with GitHub Actions
-- [ ] Deployment
-- [ ] 200+ curated clean romance books
-
-## Author
-
-Built by Munazza Habib
